@@ -15,7 +15,7 @@ for line in input:
 
 # Sorting and zipping compares the relevant ints
 output = 0
-for (a, b) in zip(sorted(left), sorted(right)):
+for a, b in zip(sorted(left), sorted(right)):
     output += abs(a - b)
 
 print(output)
