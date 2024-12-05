@@ -31,9 +31,11 @@ def words_around(x: int, y: int, length: int) -> list[str]:
         start = np.array([x, y])
         end = start + (length - 1) * direction
 
-        if (0 <= end[0] < grid_height) and (0 <= end[1] < grid_width): # Word fits in the grid
+        if (0 <= end[0] < grid_height) and (
+            0 <= end[1] < grid_width
+        ):  # Word fits in the grid
             word_coords = [start + (i * direction) for i in range(length)]
-            output.append(''.join(input[x][y] for [x, y] in word_coords))
+            output.append("".join(input[x][y] for [x, y] in word_coords))
 
     return output
 
@@ -41,9 +43,9 @@ def words_around(x: int, y: int, length: int) -> list[str]:
 output = 0
 
 for row, col in itertools.product(range(grid_height), range(grid_width)):
-    if input[row, col] == 'X':
+    if input[row, col] == "X":
         words = words_around(row, col, 4)
-        output += words.count('XMAS')
+        output += words.count("XMAS")
 
 print(output)
 
@@ -52,12 +54,10 @@ print(output)
 
 output2 = 0
 
-centres = itertools.product(
-    range(1, grid_height - 1), range(1, grid_width - 1)
-)
+centres = itertools.product(range(1, grid_height - 1), range(1, grid_width - 1))
 
 for row, col in centres:
-    if input[row][col] == 'A':
+    if input[row][col] == "A":
         corners = [
             input[row + 1][col + 1],
             input[row - 1][col - 1],
@@ -65,7 +65,11 @@ for row, col in centres:
             input[row - 1][col + 1],
         ]
 
-        if (set(corners) == {'M', 'S'}) and (corners[0] != corners[1]) and (corners[2] != corners[3]):
+        if (
+            (set(corners) == {"M", "S"})
+            and (corners[0] != corners[1])
+            and (corners[2] != corners[3])
+        ):
             output2 += 1
-    
+
 print(output2)
