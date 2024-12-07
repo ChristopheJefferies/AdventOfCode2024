@@ -63,6 +63,7 @@ print(len(path))  # Part 1 answer
 # Part 2
 # This is horribly slow but I don't have time to rewrite/optimise it :)
 
+
 def obstacle_causes_loop(obstacle_coord: tuple) -> bool:
     """
     Return True if placing an obstacle there causes the guard to enter a loop,
@@ -70,11 +71,13 @@ def obstacle_causes_loop(obstacle_coord: tuple) -> bool:
     """
 
     guard_coord, guard_dir = guard_start, guard_dir_start
-    previous_states = defaultdict(set)  # Keys are direction strings, values are lists of coords where guard has been facing that way
+    previous_states = defaultdict(
+        set
+    )  # Keys are direction strings, values are lists of coords where guard has been facing that way
     previous_states[guard_dir].add(tuple(guard_coord))
 
     while is_in_grid(next_coord(guard_coord, guard_dir)):
-        
+
         while (
             input[*next_coord(guard_coord, guard_dir)] == "#"
             or tuple(next_coord(guard_coord, guard_dir)) == obstacle_coord
@@ -82,11 +85,11 @@ def obstacle_causes_loop(obstacle_coord: tuple) -> bool:
             guard_dir = next_directions[guard_dir]
 
         guard_coord = next_coord(guard_coord, guard_dir)
-        
+
         if tuple(guard_coord) in previous_states[guard_dir]:  # Loop found
             return True
         previous_states[guard_dir].add(tuple(guard_coord))
-    
+
     return False
 
 
