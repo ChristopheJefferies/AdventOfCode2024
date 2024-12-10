@@ -8,12 +8,15 @@ input = [int(i) for i in list(input)]
 # Go straight to the answer with a two-pointer method
 
 output = 0
-front_idx, back_idx = 0, -1  # Front index steps through files and gaps front the front. Back index jumps through files only from the back.
-front_file_ID, back_file_ID = 0, (len(input) - 1) // 2  # Input assumed to be of odd length
-front_remaining, back_remaining = input[0], input[-1]  # Tracking progress through current file/gap at each end
+front_idx = 0  # Steps through files and gaps from the front
+back_idx = -1  # Steps through files only, from the back
+front_file_ID = 0
+back_file_ID = (len(input) - 1) // 2  # Input assumed to be of odd length
+front_remaining = input[0]
+back_remaining = input[-1]
 is_file = True  # False when front pointer is looking at a gap
 
-for write_position in range(sum(input[::2])):  # Number of times we should add to the checksum
+for write_position in range(sum(input[::2])):
     if is_file:  # Grab a digit from the front
         output += write_position * front_file_ID
         front_remaining -= 1
@@ -23,7 +26,7 @@ for write_position in range(sum(input[::2])):  # Number of times we should add t
             front_file_ID += 1
             front_remaining = input[front_idx]
             is_file = False
-    
+
     else:  # Grab a digit from the back
         output += write_position * back_file_ID
         back_remaining -= 1
@@ -38,7 +41,7 @@ for write_position in range(sum(input[::2])):  # Number of times we should add t
             front_idx += 1
             front_remaining = input[front_idx]
             is_file = True
-    
+
     while front_remaining == 0:  # We've hit files/gaps of length 0 - skip them
         front_idx += 1
         front_remaining = input[front_idx]
@@ -69,7 +72,7 @@ while True:
     else:
         position += file_lengths[file_ID]
     front_idx += 1
-    
+
     if front_idx == len(input):  # Reached the end
         break
 
@@ -77,17 +80,20 @@ while True:
     gap_remaining = input[front_idx]  # Prepare to track next gap size
     for later_file in sorted(available_files, reverse=True):
 
-        if file_lengths[later_file] <= gap_remaining:  # It fits in the gap we're considering
+        if file_lengths[later_file] <= gap_remaining:
+            # It fits in the gap we're considering
             for _ in range(file_lengths[later_file]):
                 checksum += position * later_file
                 position += 1
-            
+
             gap_remaining -= file_lengths[later_file]
-            available_files.remove(later_file)  # No longer available for filling future gaps
-        
+            available_files.remove(
+                later_file
+            )  # No longer available for filling future gaps
+
         if gap_remaining == 0:  # Clearly can't fit any more files in this gap
             break
-    
+
     # Restart loop on next file
     position += gap_remaining
     front_idx += 1
