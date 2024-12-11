@@ -2,9 +2,10 @@ filename = "input11.txt"
 with open(filename) as file:
     input = file.read()
 
-from collections import defaultdict
+from collections import defaultdict, Counter
 
 # Part 1
+# (This is much improved for large inputs by part 2)
 
 
 def blink_once(stones: list[str]) -> list[str]:
@@ -36,9 +37,11 @@ print(len(stones))
 
 # Part 2
 # For this to run in reasonable time, we should treat each stone separately at
-# each step rather than calculating the whole list of stones, and use a cache.
+# each step rather than calculating the full list of stones, and use a cache to
+# avoid recalculation. We can also group all stones of the same number and
+# handle them in one go.
 
-# Keys are stone numbers, values are dicts like {iterations: num_stones}
+# Keys are stone numbers, values are dicts like {iterations: num_eventual_stones}
 cache = defaultdict(dict)
 
 
@@ -48,7 +51,7 @@ def iterate_stone(stone: int, iterations: int) -> int:
     the given number of times.
     """
 
-    if iterations == 0:  # No use storing lots of 0's in the cache
+    if iterations == 0:  # No need to store lots of 0's in the cache
         return 1
 
     if stone in cache:
@@ -65,10 +68,11 @@ def iterate_stone(stone: int, iterations: int) -> int:
 
 
 stones = input.split()
+stone_counts = Counter(stones)
 num_iterations = 75
 output = 0
 
-for stone in stones:
-    output += iterate_stone(stone, num_iterations)
+for stone_value in stone_counts:
+    output += iterate_stone(stone_value, num_iterations) * stone_counts[stone_value]
 
 print(output)
