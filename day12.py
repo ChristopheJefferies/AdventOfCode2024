@@ -32,7 +32,7 @@ def update_edges(
     """
     Add/remove the relevant edge from an edges dict based on regions
     and adjacency directions. (Modifies edges in-place)
-    Edges are labelled with the coord below or to the right of them, regardless
+    Edges are labelled with the coord below/right of them, regardless
     of whether that coord is in the grid/region.
     """
 
@@ -51,17 +51,17 @@ def update_edges(
             edges[direction].remove(adjacent_coord)
 
 
-def num_sides(region: dict) -> int:
+def num_sides(edges: dict) -> int:
     """
     region is a dictionary with keys 'up', 'down', 'right', 'left'. Each value is
-    a set of coordinates.
+    a set of coordinates representing edge segments.
     Returns the total number of sides formed by these edge segments (where edges
     with different directions do not join).
     This is a janky approach but good enough for a rushed AOC before I go out.
     """
     output = 0
 
-    for coords in [region["left"], region["right"]]:  # Vertical sides
+    for coords in [edges["left"], edges["right"]]:  # Vertical sides
         while coords:
             output += 1
             coord = coords.pop()
@@ -73,7 +73,7 @@ def num_sides(region: dict) -> int:
                     coords.remove((row, col))
                     row += move
 
-    for coords in [region["up"], region["down"]]:  # Horizontal sides
+    for coords in [edges["up"], edges["down"]]:  # Horizontal sides
         while coords:
             output += 1
             coord = coords.pop()
@@ -104,11 +104,10 @@ while coords_in_new_regions:  # Whole grid not yet explored
         coord = coords_to_look_around.pop()
 
         for direction, adj_coord in adjacent_coords(coord).items():
-            # Record edges against the border of the grid
             if not is_in_grid(adj_coord):
+                # Still record edges on the outside border of the grid
                 update_edges(edges, coord, adj_coord, direction, False)
 
-            # Update edge segments and record if this adj_coord should be revisited later (in this region or another)
             elif input[adj_coord[0]][adj_coord[1]] == region_char:  # Same region
                 if adj_coord in region:  # Already added
                     update_edges(edges, coord, adj_coord, direction, True)
@@ -120,7 +119,6 @@ while coords_in_new_regions:  # Whole grid not yet explored
                 update_edges(edges, coord, adj_coord, direction, False)
                 coords_in_new_regions.add(adj_coord)
 
-        # Add this coord to the region and update perimeta length/types
         region.add(coord)
 
     # Region is finished
@@ -129,5 +127,4 @@ while coords_in_new_regions:  # Whole grid not yet explored
     all_regions |= region
     coords_in_new_regions -= all_regions
 
-print(price1)
-print(price2)
+print(price1, price2)
