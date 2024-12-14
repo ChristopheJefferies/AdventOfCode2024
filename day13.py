@@ -34,11 +34,12 @@ def min_cost_for_prize(machine: list[int]) -> int:
         if (Px < 0) or (Py < 0):
             break
 
-        if Px % Bx == 0:  # x coord matches target
+        if Px % Bx == 0:  # x coord can be fixed with B presses from here
             B_presses = Px // Bx
             if By * B_presses == Py:  # y coord matches target, solution found
                 min_cost = min(min_cost, (3 * A_presses) + B_presses)
 
+        # Modify these in-place to track remaining movement needed
         Px -= Ax
         Py -= Ay
 
@@ -56,24 +57,24 @@ print(total_cost)
 # Smarter approach for part 2
 
 """
-If the two button presses are non-parallel (as vectors in 2D space):
-    There's either a unique linear combination of the vectors that hits the target, or none.
+If the two button presses are non-parallel (as vectors in 2D):
+    There's either a unique linear combination of the vectors that hits the target, or none
     Use the extended Euclidean alg to find a pair u, v such that u*Ax + v*Bx = g := gcd(Ax, Bx)
-    Do a quick check of gcd's in both coordinates to eliminiate obviously-unreachable prizes.
+    Do a quick check of gcd's in both coordinates to eliminiate obviously-unreachable prizes
     Multiply them both by Px//g to get a particular solution u'*Ax + v'*Bx = Px
         All solutions are then given by adding multiples of (-Bx/g,Ax/g) to (u',v')
     Try adjusting solution to hit the Y coordinate. Compute u'*Ay + v'*By and the step -Bx*Ay/g + Ax*By/g
-        Add multiples of the step (in the right direction) until we hit/pass the target, check for positivity, and return as needed.
+        Add multiples of the step (in the right direction) until we hit/pass the target, check for positivity, and return cost
 
 If the two vectors are parallel:
-    Can no longer assume there's a unique linear combination of the vectors that hits the target.
-    But the AOC creators seemed not to test us with these. Not complaining
+    Can no longer assume there's a unique linear combination of the vectors that hits the target
+    But the AOC creators seemed not to test us with these. Not complaining on a busy day :)
 """
 
 
 def extended_gcd(a: int, b: int) -> tuple[int]:
     """
-    Extended gcd algorithm, as given on Wikipedia.
+    Extended gcd algorithm, as described e.g. on Wikipedia.
     Outputs:
         gcd(a, b)
         Bezout coefficients u, v such that a*u + b*v = gcd(a, b)
