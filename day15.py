@@ -43,7 +43,7 @@ class PartOne:
 
     def push(self, coord: list[int], direction: str) -> bool:
         """
-        Push the object at position (x, y) in the grid in the given direction if possible.
+        Push the object at at the given coordinate in the given direction if possible.
         Do this by first pushing any other objects out of the way.
         Return True if it was possible, else False.
         """
@@ -77,7 +77,7 @@ class PartOne:
         for direction in self.movements:
             self.push(self.robot_coord, direction)
 
-    def GPS_sum(self):
+    def get_GPS_sum(self):
         output = 0
         for i, row in enumerate(self.grid):
             for j, char in enumerate(row):
@@ -89,7 +89,7 @@ class PartOne:
     def solve(self):
         self.parse_input()
         self.execute_movements()
-        return self.GPS_sum()
+        return self.get_GPS_sum()
 
 
 class PartTwo(PartOne):
@@ -125,10 +125,8 @@ class PartTwo(PartOne):
 
     def can_push(self, coord: list[int], direction: str) -> bool:
         """
-        Return True if pushing the object at coord in the given direction is
-            possible, or False otherwise.
-        Don't execute the push itself as this may depend on the other half of a
-            box being able to move.
+        Return True if pushing the object at coord in the given direction is possible, or False otherwise.
+        Don't execute the push itself as this may depend on the other half of a box being able to move.
         """
         row, col = coord
         char = self.grid[row][col]
@@ -145,19 +143,22 @@ class PartTwo(PartOne):
             # Only one adjacent char to check
             return self.can_push(next_coord, direction)
 
-        # Pushing a box up or down - need to check its other half as well.
+        # Pushing a box up or down - need to check both halves
+        if not self.can_push(next_coord, direction):
+            return False
         other_half, _ = self.get_other_box_half(coord, char)
         other_half_next = get_next_coord(other_half, direction)
-        return self.can_push(next_coord, direction) and self.can_push(
-            other_half_next, direction
-        )
+        if not self.can_push(other_half_next, direction):
+            return False
+
+        return True
 
     def push(self, coord: list[int], direction: str) -> None:
         """
-        Push the object at position (x, y) in the grid in the given direction if possible.
+        Push the object at the given coordinate in the given direction if possible.
         Do this by first pushing any other objects out of the way.
         Movement is guaranteed as we'll have checked can_push first.
-        For boxes, we can push the halves in either order <intuitively obvious but could do with proof>.
+        For boxes, we can push the halves in either order (intuitively obvious but could do with proof?).
         """
         if not self.can_push(coord, direction):
             return
@@ -175,12 +176,13 @@ class PartTwo(PartOne):
         self.grid[row][col] = "."
 
         # If this is a box and we're pushing up/down, push the other half too.
-        # Prefer explicit code rather than a recursive call and a check for the
-        # other half already having moved, as this seems fiddly to debug if it
-        # fails.
+        # Prefer explicit code here rather than a recursive call and a check
+        # for the other half already having moved, as this seems fiddly to
+        # debug if it goes wrong.
         if char in ["[", "]"] and direction in ["^", "v"]:
             other_half, other_char = self.get_other_box_half(coord, char)
             other_next = get_next_coord(other_half, direction)
+
             self.push(other_next, direction)
             self.grid[other_next[0]][other_next[1]] = other_char
             self.grid[other_half[0]][other_half[1]] = "."
@@ -191,7 +193,7 @@ class PartTwo(PartOne):
 
         return
 
-    def GPS_sum(self):
+    def get_GPS_sum(self):
         output = 0
         for i, row in enumerate(self.grid):
             for j, char in enumerate(row):
@@ -205,7 +207,7 @@ class PartTwo(PartOne):
         self.expand_grid()
         self.find_robot()
         self.execute_movements()
-        return self.GPS_sum()
+        return self.get_GPS_sum()
 
 
 if __name__ == "__main__":
