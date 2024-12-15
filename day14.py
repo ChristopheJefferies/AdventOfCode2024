@@ -12,8 +12,8 @@ input = []
 with open(filename) as file:
     for line in file:
         pos, vel = line.split()
-        px, py = pos[2:].split(',')
-        vx, vy = vel[2:].split(',')
+        px, py = pos[2:].split(",")
+        vx, vy = vel[2:].split(",")
         input.append([int(px), int(py), int(vx), int(vy)])
 
 # Part 1
@@ -35,13 +35,13 @@ def increment_quadrant(x: int, y: int) -> None:
             quadrant_counts[0] += 1
         elif y > hori_divide:
             quadrant_counts[2] += 1
-    
+
     elif x > vert_divide:
         if y < hori_divide:
             quadrant_counts[1] += 1
         elif y > hori_divide:
             quadrant_counts[3] += 1
-    
+
     return
 
 
@@ -65,14 +65,16 @@ print(math.prod(quadrant_counts.values()))
 # Part 2
 # Need all the robots' positions at each step now rather than finding them one at a time.
 
-class Robot():
+
+class Robot:
     def __init__(self, robot_info):
         self.px, self.py, self.vx, self.vy = robot_info
         self.position = (self.px, self.py)
-    
+
     def step(self):
         self.px = (self.px + self.vx) % GRID_WIDTH
         self.py = (self.py + self.vy) % GRID_HEIGHT
+
 
 robots = [Robot(robot) for robot in input]
 
@@ -87,9 +89,11 @@ for frame in range(7623):
         robot.step()
 
 grid = 0 * np.empty((GRID_HEIGHT, GRID_WIDTH), dtype=np.int8)
-grid[[robot.py for robot in robots], [robot.px for robot in robots]] = 1  # The problem uses coords for cols then rows
+grid[[robot.py for robot in robots], [robot.px for robot in robots]] = (
+    1  # The problem uses coords for cols then rows
+)
 
-with open("output14.txt", 'w') as file:
+with open("output14.txt", "w") as file:
     for line in grid:
-        string = ['#' if i else ' ' for i in line]
-        file.write(''.join(string) + '\n')
+        string = ["#" if i else " " for i in line]
+        file.write("".join(string) + "\n")
